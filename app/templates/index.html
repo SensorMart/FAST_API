@@ -28,14 +28,54 @@
             <th>Y</th>
             <th>Z</th>
         </tr>
-        {% for item in data %}
-        <tr>
-            <td>{{ item.sr_no }}</td>
-            <td>{{ item.X }}</td>
-            <td>{{ item.Y }}</td>
-            <td>{{ item.Z }}</td>
-        </tr>
-        {% endfor %}
+        <tbody id="data-table-body">
+            {% for item in data %}
+            <tr>
+                <td>{{ item.sr_no }}</td>
+                <td>{{ item.X }}</td>
+                <td>{{ item.Y }}</td>
+                <td>{{ item.Z }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
     </table>
+
+    <script>
+        // Establish a WebSocket connection
+        const socket = new WebSocket('ws://192.168.31.104:8000/ws');
+
+        socket.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            const tableBody = document.getElementById('data-table-body');
+
+            const newRow = document.createElement('tr');
+
+            const srNoCell = document.createElement('td');
+            srNoCell.textContent = data.sr_no;
+            newRow.appendChild(srNoCell);
+
+            const xCell = document.createElement('td');
+            xCell.textContent = data.X;
+            newRow.appendChild(xCell);
+
+            const yCell = document.createElement('td');
+            yCell.textContent = data.Y;
+            newRow.appendChild(yCell);
+
+            const zCell = document.createElement('td');
+            zCell.textContent = data.Z;
+            newRow.appendChild(zCell);
+
+            tableBody.appendChild(newRow);
+        };
+
+        socket.onclose = function(event) {
+            console.log('WebSocket is closed now.');
+        };
+
+        socket.onerror = function(error) {
+            console.error('WebSocket Error:', error);
+        };
+    </script>
 </body>
 </html>
